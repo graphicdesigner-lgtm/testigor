@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StoxRadar · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0d13; --side:#0c1018; --card:#121722; --card-2:#161c28;
+    --line:#1d2431; --line-2:#262e3d;
+    --text:#e6e9ef; --muted:#8a93a6; --dim:#5d6678;
+    --blue:#3b82f6; --blue-2:#2f6fe0; --up:#22c55e; --down:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--bg);color:var(--text);font:400 14px/20px Inter,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  svg.lucide{width:16px;height:16px;stroke-width:1.75}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  .app{flex:1;display:flex;min-height:0}
+
+  /* sidebar */
+  aside{width:240px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;position:relative}
+  .brand{height:57px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--line)}
+  .brand img{height:32px}
+  nav{padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+  nav a{display:flex;align-items:center;gap:12px;height:36px;padding:0 12px;border-radius:6px;color:#c7cdd8;text-decoration:none;font-size:14px}
+  nav a.on{background:var(--blue);color:#fff}
+  nav a:not(.on):hover{background:var(--card)}
+  .side-cta{position:absolute;left:16px;right:16px;bottom:16px;border:1px solid #233150;border-radius:10px;padding:28px 14px 12px;background:linear-gradient(160deg,#16233d,#0f1626)}
+  .side-cta p{font-size:12px;color:var(--muted);margin-bottom:10px;padding-left:28px}
+  .btn-blue{width:100%;height:32px;border:0;border-radius:6px;background:var(--blue);color:#fff;font:500 13px Inter;display:flex;align-items:center;justify-content:center;gap:6px}
+  .chat{position:absolute;left:8px;top:8px;width:44px;height:44px;border-radius:50%;background:var(--blue);display:grid;place-items:center;box-shadow:0 6px 20px rgba(59,130,246,.45);color:#fff}
+  .chat svg.lucide{width:20px;height:20px}
+
+  /* main */
+  main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line)}
+  .search{width:310px;height:32px;background:var(--card);border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--dim);font-size:13px}
+  .search svg.lucide{width:14px;height:14px}
+  .top-icons{display:flex;gap:18px;color:#c7cdd8}
+  .ticker{height:36px;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:22px;padding:0 16px;white-space:nowrap;overflow:hidden;font-size:12px}
+  .ticker span{display:inline-flex;gap:6px;align-items:center}
+  .ticker .s{color:#fff;font-weight:500}
+  .ticker .p{color:var(--muted)}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .ticker svg.lucide{width:13px;height:13px}
+
+  .content{flex:1;padding:16px 16px 0;overflow:hidden}
+
+  /* hero radar */
+  .hero{position:relative;height:410px;border-radius:12px;overflow:hidden;border:1px solid rgba(110,168,255,.16);
+    background:
+      radial-gradient(ellipse 9% 38% at 93% 86%,rgba(70,190,255,.75),transparent 72%),
+      radial-gradient(ellipse 120% 150% at 152% 52%,transparent 50%,rgba(37,120,255,.55) 56%,rgba(20,70,220,.18) 61%,transparent 66%),
+      radial-gradient(ellipse 10% 32% at 87% 6%,rgba(30,90,245,.7),transparent 75%),
+      radial-gradient(ellipse 45% 110% at 100% 55%,rgba(8,38,165,.65),transparent 70%),
+      linear-gradient(100deg,#030523 0%,#030834 50%,#041050 100%)}
+  .hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+  .hero::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(90deg,rgba(3,5,35,.9) 0%,rgba(3,5,35,.6) 28%,rgba(3,5,35,0) 50%)}
+  .hero-copy{position:relative;z-index:3;height:100%;max-width:560px;padding:0 0 0 52px;display:flex;flex-direction:column;justify-content:center}
+  .eyebrow{display:flex;align-items:center;gap:10px;font:600 11px "JetBrains Mono",monospace;letter-spacing:.28em;margin-bottom:20px}
+  .eyebrow span{background:linear-gradient(90deg,#bef264 0%,#6ea8ff 55%,#38bdf8 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow i{width:6px;height:6px;border-radius:50%;background:#bef264;box-shadow:0 0 0 3px rgba(190,242,100,.14);animation:live 2s ease-in-out infinite}
+  @keyframes live{50%{box-shadow:0 0 0 5px rgba(190,242,100,0)}}
+  .hero h1{font:600 44px/50px Inter;letter-spacing:-1.4px;color:#f4f6fa;margin-bottom:18px}
+  .hero h1 span{color:#6ea8ff}
+  .hero p{font-size:16px;line-height:25px;max-width:390px;color:#97a1b5;margin-bottom:30px}
+
+  .btn-alert{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 26px 0 22px;border:0;border-radius:999px;cursor:pointer;
+    background:linear-gradient(100deg,#eafcc4 0%,#cff57a 42%,#b4ec45 100%);color:#0d1208;font:500 16px Inter;letter-spacing:-.2px;
+    box-shadow:0 0 0 3px #05070c,0 0 0 4px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -6px 14px rgba(101,163,13,.22),0 14px 30px -12px rgba(180,236,69,.45);
+    transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
+  .btn-alert:hover{transform:translateY(-1px);filter:brightness(1.04)}
+  .btn-alert:active{transform:translateY(0)}
+  .btn-alert svg{width:17px;height:17px;flex:none}
+  .hero .cta-note{margin:16px 0 0;font-size:12.5px;line-height:18px;color:#7f8aa3}
+  .hero .cta-note b{font-weight:600;color:#d9f99d}
+
+  /* radar stations: revealed one at a time as the beam passes */
+  .nodes{position:absolute;inset:0;z-index:3;pointer-events:none}
+  .node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:7px;
+    opacity:0;transform:translate(-50%,-16px) scale(.55);filter:blur(4px);
+    transition:opacity 1.4s ease,transform 1s ease,filter 1.4s ease}
+  .node.show{opacity:1;transform:translate(-50%,-16px) scale(1);filter:none;
+    transition:opacity .35s ease,transform .7s cubic-bezier(.34,1.56,.64,1),filter .35s ease}
+  .node .dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#15284a;color:#cfe0ff;
+    box-shadow:inset 0 0 0 1px rgba(110,168,255,.5),0 0 0 4px rgba(110,168,255,.07);transition:background .4s,color .4s,box-shadow .4s}
+  .node .dot svg.lucide{width:15px;height:15px;stroke-width:2}
+  .node .lb{font:500 9px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(203,213,225,.65);white-space:nowrap;transition:color .4s}
+  .node.on .dot{background:#bef264;color:#0d1208;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 0 0 5px rgba(190,242,100,.16),0 0 24px rgba(190,242,100,.45)}
+  .node.on .lb{color:#f4f6fa}
+
+  /* notifications: iOS-style grouped stack */
+  .stack{position:absolute;z-index:4;top:18px;right:18px;width:304px;height:110px;pointer-events:none}
+  .notif{position:absolute;top:0;left:0;right:0;display:flex;gap:12px;align-items:center;padding:12px 14px 12px 12px;border-radius:20px;
+    background:linear-gradient(180deg,rgba(52,58,78,.62),rgba(34,39,56,.62));
+    -webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);
+    box-shadow:inset 0 .5px 0 rgba(255,255,255,.22),inset 0 0 0 .5px rgba(255,255,255,.08),0 0 0 .5px rgba(0,0,0,.35),0 18px 40px -14px rgba(0,0,0,.6);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,sans-serif;
+    transform-origin:50% 100%;opacity:0;transform:translateY(-22px) scale(.94);filter:blur(10px);
+    transition:transform .75s cubic-bezier(.22,1.2,.36,1),opacity .45s ease,filter .5s ease}
+  .notif > *{transition:opacity .3s ease}
+  .notif.back > *{opacity:0}
+  .notif .app{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+    background:radial-gradient(circle at 30% 20%,#2c4f93,#0e1a36 70%);box-shadow:inset 0 .5px 0 rgba(255,255,255,.3),inset 0 0 0 .5px rgba(255,255,255,.12),0 2px 6px rgba(0,0,0,.3)}
+  .notif .app svg{width:24px;height:24px}
+  .notif .bd{flex:1;min-width:0}
+  .notif .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+  .notif .tt{flex:1;font-size:13.5px;line-height:18px;font-weight:600;color:#f5f5f7;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notif .tm{font-size:11.5px;color:rgba(235,235,245,.45)}
+  .notif .tx{display:flex;align-items:center;gap:6px;font-size:12.5px;line-height:17px;color:rgba(235,235,245,.68);white-space:nowrap;overflow:hidden}
+  .notif .tk{flex:none;font:600 10px "JetBrains Mono",monospace;letter-spacing:.02em;color:#bef264;background:rgba(190,242,100,.12);border-radius:5px;padding:1px 5px}
+  .notif .tx span{overflow:hidden;text-overflow:ellipsis}
+  .notif .msg{margin:0;font-size:12.5px;line-height:17px;color:rgba(235,235,245,.78);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .notif .msg a{color:#7fb2ff;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+
+  .dash-head{display:flex;align-items:center;justify-content:space-between;margin:22px 0 16px}
+  .dash-head h2{font:600 22px/28px "Space Grotesk",Inter,sans-serif;letter-spacing:.2px}
+  .upd{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px}
+  .btn-ghost{height:30px;border:1px solid var(--line-2);background:var(--card);color:var(--text);border-radius:6px;padding:0 12px;font:500 12px Inter;display:flex;align-items:center;gap:6px}
+  .btn-ghost svg.lucide{width:14px;height:14px}
+
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sec-head h3{display:flex;align-items:center;gap:6px;font:600 11px Inter;letter-spacing:.6px;color:var(--muted);text-transform:uppercase}
+  .sec-head h3 svg.lucide{width:13px;height:13px;color:var(--blue)}
+  .sec-head a{color:var(--blue);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px}
+  .sec-head a svg.lucide{width:12px;height:12px}
+
+  .row{display:flex;gap:10px;overflow:hidden}
+  .pol{flex:none;width:172px;height:143px;background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;padding-top:14px;text-align:center}
+  .pol img{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:top;margin-bottom:8px}
+  .pol b{font-weight:600;font-size:13px;line-height:18px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pol small{font-size:11px;color:var(--muted);line-height:16px}
+  .pol .st{display:flex;gap:8px;font-size:11px;margin-top:8px;align-items:center}
+  .pol .st span{display:inline-flex;align-items:center;gap:2px}
+  .pol .st svg.lucide{width:11px;height:11px}
+  .pol .st .tx{color:var(--muted)}
+
+  .ins{flex:none;width:198px;height:71px;background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 12px}
+  .av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:600 14px Inter;color:#fff;flex:none}
+  .ins b{display:block;font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+  .ins small{font-size:11px;color:var(--muted)}
+  .ins small .tk{color:var(--blue);font-family:"JetBrains Mono",monospace;margin-right:4px}
+
+  .burger{display:none;place-items:center;width:32px;height:32px;border:0;background:none;color:#c7cdd8;flex:none;cursor:pointer}
+  .burger svg.lucide{width:20px;height:20px}
+  .chat-m,.scrim{display:none}
+
+  /* ---------- mobile ---------- */
+  @media (max-width:768px){
+    html,body{height:auto;overflow:auto}
+    body{display:block}
+    .app{display:block}
+    main{overflow:visible}
+    .ticker{display:none}
+    aside{position:fixed;top:0;left:0;bottom:0;z-index:60;transform:translateX(-100%);transition:transform .35s cubic-bezier(.2,.9,.25,1)}
+    body.nav-open aside{transform:none;box-shadow:20px 0 60px rgba(0,0,0,.5)}
+    .scrim{display:block;position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s}
+    body.nav-open .scrim{opacity:1;pointer-events:auto}
+    .burger{display:grid}
+    .topbar{gap:10px;padding:0 12px}
+    .search{flex:1;width:auto}
+    .top-icons{gap:14px}
+    .content{display:block;padding:12px 12px 24px;overflow:visible}
+    .hero{height:760px;background:#030523}
+    .hero::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url(assets/hero-mobile-bg.webp) center bottom/cover no-repeat;opacity:.4}
+    .hero::after{background:linear-gradient(180deg,#030523 0%,rgba(3,5,35,.85) 36%,rgba(3,5,35,0) 56%)}
+    .hero-copy{max-width:none;height:auto;padding:44px 22px 0;justify-content:flex-start;align-items:center;text-align:center}
+    .eyebrow{font-size:10px;margin-bottom:16px;justify-content:center}
+    .hero h1{font-size:31px;line-height:36px;letter-spacing:-1px;margin-bottom:12px}
+    .hero h1 br{display:none}
+    .hero p{font-size:15px;line-height:22px;margin-bottom:22px}
+    .btn-alert{align-self:center}
+    .stack{left:10px;right:10px;top:auto;bottom:40px;width:auto}
+    .notif{width:100%}
+    .dash-head{margin:14px 0 12px}
+    .sec-head,.row{display:none}
+    .chat-m{display:grid;position:fixed;left:16px;bottom:14px;top:auto;z-index:50}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside>
+    <div class="brand"><img src="assets/logo-a.png" alt="StoxRadar"></div>
+    <nav>
+      <a class="on" href="#"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+      <a href="#"><i data-lucide="building-2"></i>Companies</a>
+      <a href="#"><i data-lucide="newspaper"></i>News</a>
+      <a href="#"><i data-lucide="users"></i>Insiders</a>
+      <a href="#"><i data-lucide="landmark"></i>Politicians</a>
+      <a href="#"><i data-lucide="building"></i>Institutions</a>
+      <a href="#"><i data-lucide="layers"></i>ETFs</a>
+      <a href="#"><i data-lucide="bitcoin"></i>Crypto</a>
+      <a href="#"><i data-lucide="megaphone"></i>Press Releases</a>
+      <a href="#"><i data-lucide="file-text"></i>SEC Filings</a>
+      <a href="#"><i data-lucide="bell-ring"></i>Alerts</a>
+      <a href="#"><i data-lucide="sunrise"></i>Pre-Market</a>
+      <a href="#"><i data-lucide="moon"></i>After-Market</a>
+      <a href="#"><i data-lucide="calendar"></i>Calendar</a>
+      <a href="#"><i data-lucide="graduation-cap"></i>Small Cap Academy</a>
+    </nav>
+    <div class="side-cta">
+      <p>Get started for full access.</p>
+      <button class="btn-blue">Get Started <i data-lucide="arrow-right"></i></button>
+    </div>
+    <div class="chat" style="left:24px;bottom:66px;top:auto"><i data-lucide="message-circle"></i></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="chat chat-m"><i data-lucide="message-circle"></i></div>
+
+  <main>
+    <div class="topbar">
+      <button class="burger" id="burger" aria-label="Menu"><i data-lucide="menu"></i></button><div class="search"><i data-lucide="search"></i>Search stocks...</div>
+      <div class="top-icons"><i data-lucide="sun"></i><i data-lucide="user"></i></div>
+    </div>
+
+    <div class="ticker mono" id="ticker"></div>
+
+    <div class="content">
+      <section class="hero" id="hero">
+        <canvas id="radar"></canvas>
+        <div class="nodes" id="nodes"></div>
+        <div class="hero-copy">
+          <div class="eyebrow"><i></i><span>LIVE MARKET INTELLIGENCE</span></div>
+          <h1>Your always-on radar <br>for <span>market moves.</span></h1>
+          <p>StoxRadar continuously monitors companies and texts you when something moves. Faster than email. Free. No credit card.</p>
+          <button class="btn-alert"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a6.5 6.5 0 0 0-6.5 6.5v3.6l-1.7 3.1A1 1 0 0 0 4.7 17h14.6a1 1 0 0 0 .9-1.3l-1.7-3.1V9A6.5 6.5 0 0 0 12 2.5Z"/><path d="M9.2 18.5a2.9 2.9 0 0 0 5.6 0Z"/></svg>Start getting free alerts</button>
+          <p class="cta-note">StoxRadar is <b>free</b>. Only <b>218 spots</b> left in beta.</p>
+        </div>
+        <div class="stack" id="stack"></div>
+      </section>
+
+      <div class="dash-head">
+        <h2>Dashboard</h2>
+        <div class="upd">Updated 16:05:30 <button class="btn-ghost"><i data-lucide="refresh-cw"></i>Refresh</button></div>
+      </div>
+
+      <div class="sec-head">
+        <h3><i data-lucide="landmark"></i>Politicians to watch</h3>
+        <a href="#">View all <i data-lucide="arrow-right"></i></a>
+      </div>
+      <div class="row" id="pols"></div>
+
+      <div class="sec-head" style="margin-top:22px">
+        <h3><i data-lucide="activity"></i>Most active insiders</h3>
+        <a href="#">View all <i data-lucide="arrow-right"></i></a>
+      </div>
+      <div class="row" id="ins"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const up = '<i data-lucide="trending-up"></i>', dn = '<i data-lucide="trending-down"></i>';
+
+  const ticks = [
+    ['SPY','778.92','+0.64%'],['QQQ','751.19','+0.40%'],['DIA','516.90','+1.03%'],['IWM','279.39','+0.66%'],
+    ['AAPL','338.02','-0.71%'],['MSFT','536.27','+2.61%'],['NVDA','229.67','-0.35%'],['TSLA','412.08','+1.12%'],['AMZN','241.55','+0.28%']
+  ];
+  document.getElementById('ticker').innerHTML = ticks.map(([s,p,c]) => {
+    const pos = c[0] === '+';
+    return `<span><span class="s">${s}</span><span class="p">$${p}</span><span class="${pos?'up':'down'}">${pos?up:dn}${c}</span></span>`;
+  }).join('');
+
+  const pols = [
+    ['p1','Kevin Hern','House · OK01',13,84,99],
+    ['p2','Richard Blumenthal','Senate · CT',1,70,71],
+    ['p3','Dave McCormick','Senate · PA',17,35,52],
+    ['p4','Maria Elvira Salazar','House · FL27',9,33,42],
+    ['p5','Blumenthal, Richard (Senator)','Senate',24,9,33],
+    ['p6','Scott Franklin','House · FL18',9,7,16],
+    ['p7','John Boozman','Senate · AR',6,4,10],
+  ];
+  document.getElementById('pols').innerHTML = pols.map(([img,n,r,b,s,t]) =>
+    `<div class="pol"><img src="assets/${img}.jpg" alt="${n}"><b>${n}</b><small>${r}</small>
+      <div class="st"><span class="up">${up}${b}</span><span class="down">${dn}${s}</span><span class="tx">${t} tx</span></div></div>`
+  ).join('');
+
+  const ins = [
+    ['KG','Kurtz George','CRWD',21,'#4f46e5'],['TH','Torley Helen','HALO',16,'#6d3fd6'],
+    ['RA','ROTHBLATT Martine','UTHR',16,'#3fae4f'],['KA','Kshirsagar Tushar','MMM',13,'#b5702b'],
+    ['BA','Botello Armando','LIN',11,'#2f9e45'],['RJ','RUBINSTEIN Jonathan','ADPT',10,'#7c3aed'],
+  ];
+  document.getElementById('ins').innerHTML = ins.map(([a,n,tk,tx,c]) =>
+    `<div class="ins"><div class="av" style="background:${c}">${a}</div><div><b>${n}</b><small><span class="tk">${tk}</span>${tx} tx</small></div></div>`
+  ).join('');
+
+  lucide.createIcons();
+
+  /* mobile drawer */
+  const toggleNav = open => document.body.classList.toggle('nav-open', open);
+  document.getElementById('burger').onclick = () => toggleNav(true);
+  document.getElementById('scrim').onclick = () => toggleNav(false);
+
+  /* ---------- hero radar ---------- */
+  (() => {
+    const hero = document.getElementById('hero');
+    const cv = document.getElementById('radar');
+    const stack = document.getElementById('stack');
+    const nodesEl = document.getElementById('nodes');
+    const ctx = cv.getContext('2d');
+    const TAU = Math.PI * 2, DEG = Math.PI / 180;
+    const SPEED = TAU / 8;            // one revolution every 8s → a station every quarter turn (2s)
+    const TRAIL = 1.1;
+    const BLUE = '110,168,255', LIME = '190,242,100', GRAY = '148,163,184';
+    const MONO = '"JetBrains Mono", ui-monospace, monospace';
+
+    // four stations, one per quadrant; ring = fraction of R
+    const STATIONS = [
+      { label:'Congress', icon:'landmark', deg:-62, ring:.78, events:[
+        ['Capitol Hill Buy Spotted! Senator Loads Up On Tech Name Right Before Earnings (Big Size!)', 'See Filing:'],
+        ['Congress Trade Alert! Rep. Adds Chip Stock Ahead Of Key Vote. Smart Money Moving?', 'Full Details:']]},
+      { label:'Insiders', icon:'user-check', deg:24, ring:1, events:[
+        ['Insiders Buying Early! CEO Scoops Up Shares (Low Float!) Momentum Building Fast.', 'Full Update:'],
+        ['Director Buy Detected! Six-Figure Purchase Into The Dip. Is A Turnaround Coming?', 'Read Update:']]},
+      { label:'Options flow', icon:'zap', deg:118, ring:.78, events:[
+        ['Radar Pinging Early! Unusual Call Volume (3x Avg!) On Nasdaq Mover. Something Brewing?', 'TAP:'],
+        ['Big Sweep Hit The Tape! $4M In Weekly Calls Bought (Aggressive!) Explosive Setup?', 'Full Update:']]},
+      { label:'SEC filings', icon:'file-text', deg:208, ring:1, events:[
+        ['Fresh 8-K Just Filed! Material Event On NYSE Name (Could Move Fast!) Don\'t Miss It.', 'Read Filing:'],
+        ['New 13F Stake Revealed! Major Fund Opens Position (Strong Conviction!) Going Green?', 'Full Update:']]},
+    ];
+    STATIONS.forEach(s => {
+      s.i = 0; s.on = 0;
+      s.el = document.createElement('div');
+      s.el.className = 'node';
+      s.el.innerHTML = `<span class="dot"><i data-lucide="${s.icon}"></i></span><span class="lb">${s.label}</span>`;
+      nodesEl.appendChild(s.el);
+    });
+    lucide.createIcons();
+
+    const APP_ICON = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6ea8ff" stroke-opacity=".45"/><circle cx="12" cy="12" r="5" stroke="#6ea8ff" stroke-opacity=".7"/><path d="M12 12 18.4 5.6" stroke="#9cc3ff" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="14.5" r="1.6" fill="#bef264"/></svg>`;
+
+    let mobile = false, W, H, cx, cy, R, dots = [], scanned = 4812;
+    let angle = -Math.PI / 2, last = performance.now();
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const norm = x => ((x % TAU) + TAU) % TAU;
+
+    function resize(){
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = hero.clientWidth; H = hero.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      mobile = W < 600;
+      if (mobile) { cx = W / 2; R = W * .46; cy = H - R - 22; }   // sits low; gap to the CTA ~80px
+      else { cx = W * .62; cy = H / 2; R = H * .50; }
+      // mobile: notifications sit centred on the radar core
+      stack.style.top = mobile ? (cy - 34) + 'px' : '';
+      STATIONS.forEach(s => {
+        s.x = cx + Math.cos(s.deg * DEG) * R * s.ring;
+        s.y = cy + Math.sin(s.deg * DEG) * R * s.ring;
+        s.el.style.left = s.x + 'px'; s.el.style.top = s.y + 'px';
+      });
+      // ambient contacts sit on the orbits
+      dots = [];
+      const rings = [.34, .56, .78, 1];
+      for (let i = 0; i < 12; i++) dots.push({ a: rand(0, TAU), r: rings[i % 4] * R, lime: Math.random() < .3, glow: 0 });
+    }
+
+    function crossed(prev, cur, a){
+      const p = norm(prev), c = norm(cur), t = norm(a);
+      return p <= c ? (t > p && t <= c) : (t > p || t <= c);
+    }
+
+    // ---- iOS-style grouped notification stack ----
+    const cards = [];
+    // desktop: list of up to 3, the oldest fades out slowly · mobile: grouped stack
+    function layout(){
+      let y = 0;
+      cards.forEach((c, i) => {
+        const el = c.el;
+        el.style.zIndex = 10 - i;
+        el.style.filter = 'none';
+        if (mobile) {
+          el.classList.toggle('back', i > 0);
+          el.style.opacity = [1, .7, .4][i] ?? 0;
+          el.style.transform = `translateY(${i * 9}px) scale(${1 - i * .055})`;
+        } else {
+          el.classList.remove('back');
+          const out = i >= 3;
+          if (out) el.style.transition = 'opacity 1.4s ease, transform 1.4s ease';
+          el.style.opacity = out ? 0 : 1;
+          el.style.transform = `translateY(${y}px) scale(${out ? .97 : 1})`;
+          y += el.offsetHeight + 10;
+        }
+      });
+      cards.splice(mobile ? 4 : 3).forEach(c => setTimeout(() => c.el.remove(), mobile ? 600 : 1500));
+    }
+    function notify(st, [msg, cta]){
+      const el = document.createElement('div');
+      el.className = 'notif';
+      el.innerHTML = `<div class="app">${APP_ICON}</div><div class="bd">
+        <div class="hd"><span class="tt">StoxRadar</span><span class="tm">now</span></div>
+        <p class="msg">${msg} <a>${cta}</a></p></div>`;
+      stack.appendChild(el);
+      cards.unshift({ el });
+      requestAnimationFrame(() => requestAnimationFrame(layout));
+    }
+
+    // text set along an arc, centred on `mid` (radians)
+    function arcText(str, r, mid, flip){
+      ctx.save();
+      ctx.font = `500 9px ${MONO}`;
+      const spacing = 2.4;
+      const widths = [...str].map(ch => ctx.measureText(ch).width + spacing);
+      const total = widths.reduce((a, b) => a + b, 0) / r;
+      let a = flip ? mid + total / 2 : mid - total / 2;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      [...str].forEach((ch, i) => {
+        const step = widths[i] / r;
+        a += (flip ? -step : step) / 2;
+        ctx.save();
+        ctx.translate(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+        ctx.rotate(a + (flip ? -Math.PI / 2 : Math.PI / 2));
+        ctx.fillText(ch, 0, 0);
+        ctx.restore();
+        a += (flip ? -step : step) / 2;
+      });
+      ctx.restore();
+      return total;
+    }
+
+    function frame(now){
+      const dt = Math.min((now - last) / 1000, .05); last = now;
+      const prev = angle;
+      angle += SPEED * dt;
+      if (Math.random() < .15) scanned++;
+
+      for (const s of STATIONS) {
+        if (crossed(prev, angle, s.deg * DEG)) {
+          s.on = 1; s.seen = now;
+          notify(s, s.events[s.i++ % s.events.length]);
+        }
+        s.on = Math.max(0, s.on - dt / 1.8);
+        s.el.classList.toggle('on', s.on > 0);
+        s.el.classList.toggle('show', now - (s.seen ?? -1e9) < 5200);
+      }
+      for (const d of dots) {
+        if (crossed(prev, angle, d.a)) d.glow = 1;
+        d.glow = Math.max(0, d.glow - dt * .5);
+      }
+
+      ctx.clearRect(0, 0, W, H);
+
+      // layered discs, outermost first
+      [1, .78, .56, .34].forEach((k, i) => {
+        const r = R * k;
+        const g = ctx.createRadialGradient(cx, cy, r * .55, cx, cy, r);
+        g.addColorStop(0, `rgba(${BLUE},${.025 + i * .012})`);
+        g.addColorStop(1, `rgba(${BLUE},${.06 + i * .02})`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+        ctx.strokeStyle = `rgba(${BLUE},${.14 + i * .04})`; ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+
+      // bezel ticks on the outer disc
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 120; i++) {
+        const a = i * TAU / 120, major = i % 10 === 0;
+        const r1 = R - (major ? 7 : 3.5);
+        ctx.strokeStyle = `rgba(${BLUE},${major ? .45 : .18})`;
+        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke();
+      }
+
+      // beam afterglow: a sharp leading edge that decays behind it
+      const g = ctx.createConicGradient(angle - TRAIL, cx, cy), f = TRAIL / TAU;
+      g.addColorStop(0, `rgba(${LIME},0)`);
+      g.addColorStop(f * .6, `rgba(${LIME},.05)`);
+      g.addColorStop(f * .92, `rgba(${LIME},.16)`);
+      g.addColorStop(f, `rgba(${LIME},.3)`);
+      g.addColorStop(f + .0005, `rgba(${LIME},0)`);
+      g.addColorStop(1, `rgba(${LIME},0)`);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = g; ctx.fill();
+
+      // lit segment of the rim trailing the beam
+      const rim = ctx.createConicGradient(angle - .9, cx, cy);
+      rim.addColorStop(0, `rgba(${LIME},0)`);
+      rim.addColorStop(.9 / TAU, `rgba(${LIME},.9)`);
+      rim.addColorStop(.9 / TAU + .0005, `rgba(${LIME},0)`);
+      rim.addColorStop(1, `rgba(${LIME},0)`);
+      ctx.strokeStyle = rim; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, R, angle - .9, angle); ctx.stroke();
+
+      // beam: soft glow + crisp bright line + tip
+      const ca = Math.cos(angle), sa = Math.sin(angle);
+      const sx = cx + ca * R * .16, sy = cy + sa * R * .16, ex = cx + ca * R, ey = cy + sa * R;
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.shadowColor = 'rgba(190,242,100,.9)'; ctx.shadowBlur = 12;
+      const lg = ctx.createLinearGradient(sx, sy, ex, ey);
+      lg.addColorStop(0, 'rgba(217,249,157,.35)'); lg.addColorStop(1, 'rgba(236,252,203,1)');
+      ctx.strokeStyle = lg; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.shadowBlur = 14; ctx.fillStyle = '#ecfccb';
+      ctx.beginPath(); ctx.arc(ex, ey, 3, 0, TAU); ctx.fill();
+      ctx.restore();
+      ctx.lineWidth = 1;
+
+      // outer ring with curved labels, slowly drifting
+      const rr = R * 1.14, drift = now * .00003;
+      ctx.fillStyle = `rgba(${LIME},.75)`;
+      const t1 = arcText('LIVE MARKET RADAR', rr, -Math.PI / 2 + drift, false);
+      const t2 = arcText('SIGNALS · 24/7', rr, Math.PI / 2 + drift, true);
+      const gap = 10 / rr;
+      ctx.strokeStyle = `rgba(${LIME},.28)`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2 + drift + t1 / 2 + gap, Math.PI / 2 + drift - t2 / 2 - gap); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, rr, Math.PI / 2 + drift + t2 / 2 + gap, Math.PI * 1.5 + drift - t1 / 2 - gap); ctx.stroke();
+
+      // hatched core
+      const cr = R * .16;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, cr, 0, TAU);
+      ctx.fillStyle = `rgba(${LIME},.08)`; ctx.fill();
+      ctx.clip();
+      ctx.strokeStyle = `rgba(${LIME},.6)`; ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (let o = -cr * 2; o < cr * 2; o += 4.5) { ctx.moveTo(cx + o - cr, cy + cr); ctx.lineTo(cx + o + cr, cy - cr); }
+      ctx.stroke();
+      ctx.restore();
+      ctx.strokeStyle = `rgba(${LIME},.35)`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(cx, cy, cr + 5, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = `rgba(${LIME},.9)`; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(cx, cy, cr + 5, angle - 1.1, angle); ctx.stroke();
+      ctx.lineWidth = 1; ctx.lineCap = 'butt';
+
+      // ambient contacts
+      for (const d of dots) {
+        const x = cx + Math.cos(d.a) * d.r, y = cy + Math.sin(d.a) * d.r;
+        const c = d.lime ? LIME : BLUE;
+        ctx.fillStyle = `rgba(${c},${.35 + d.glow * .6})`;
+        ctx.beginPath(); ctx.arc(x, y, d.lime ? 3.2 : 2.2, 0, TAU); ctx.fill();
+      }
+
+      // pulse ring behind an active station
+      for (const s of STATIONS) {
+        if (s.on <= 0) continue;
+        const p = 1 - s.on;
+        ctx.strokeStyle = `rgba(${LIME},${s.on * .5})`;
+        ctx.beginPath(); ctx.arc(s.x, s.y, 16 + p * 22, 0, TAU); ctx.stroke();
+      }
+
+      if (!mobile) {
+        ctx.font = `10px ${MONO}`; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = `rgba(${GRAY},.45)`;
+        ctx.fillText(`SCANNING ${scanned.toLocaleString('en-US')} TICKERS`, W - 18, H - 16);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    new ResizeObserver(resize).observe(hero);
+    resize();
+    requestAnimationFrame(frame);
+  })();
+</script>
+</body>
+</html>
