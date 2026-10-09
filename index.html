@@ -37,8 +37,8 @@
   .chat svg.lucide{width:20px;height:20px}
 
   /* main */
-  main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
-  .topbar{height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line)}
+  main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto}
+  .topbar{position:sticky;top:0;z-index:20;background:var(--bg);height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line)}
   .search{width:310px;height:32px;background:var(--card);border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--dim);font-size:13px}
   .search svg.lucide{width:14px;height:14px}
   .top-icons{display:flex;gap:18px;color:#c7cdd8}
@@ -49,7 +49,7 @@
   .up{color:var(--up)} .down{color:var(--down)}
   .ticker svg.lucide{width:13px;height:13px}
 
-  .content{flex:1;padding:16px 16px 0;overflow:hidden}
+  .content{flex:none;padding:16px 16px 0}
 
   /* hero radar */
   .hero{position:relative;height:410px;border-radius:12px;overflow:hidden;border:1px solid rgba(110,168,255,.16);
@@ -147,6 +147,74 @@
   .ins small{font-size:11px;color:var(--muted)}
   .ins small .tk{color:var(--blue);font-family:"JetBrains Mono",monospace;margin-right:4px}
 
+  /* ---------- sections below the fold ---------- */
+  .sec{margin-top:26px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .news{display:grid;grid-template-columns:minmax(0,1fr) 378px;gap:16px;align-items:start}
+  .news-main{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .feat img{display:block;width:100%;height:208px;object-fit:cover}
+  .feat .bd{padding:14px 16px 16px}
+  .meta{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted);margin-bottom:8px}
+  .meta .src{color:var(--blue);background:rgba(59,130,246,.1);padding:2px 8px;border-radius:999px}
+  .meta span{display:inline-flex;align-items:center;gap:3px}
+  .meta svg.lucide{width:11px;height:11px}
+  .feat h4{font:700 15px/22px Inter;margin-bottom:6px}
+  .feat p{font-size:12px;line-height:17px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .news-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ncard img{display:block;width:100%;height:112px;object-fit:cover}
+  .ncard .bd{padding:10px 12px 12px}
+  .ncard .meta{margin-bottom:6px}
+  .ncard .meta .src,.li .meta .src{background:none;padding:0}
+  .ncard h5{font:600 12px/17px Inter;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .latest .hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font:600 11px Inter;letter-spacing:.6px;color:var(--muted)}
+  .latest .hd a{color:var(--blue);font-weight:500;letter-spacing:0;text-decoration:none;display:flex;gap:4px;align-items:center}
+  .latest .hd a svg.lucide{width:12px;height:12px}
+  .li{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .li:last-child{border-bottom:0}
+  .li img{width:48px;height:48px;border-radius:6px;object-fit:cover;flex:none}
+  .li b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:500 12px/16px Inter;margin-bottom:4px}
+  .li .meta{margin:0;font-size:11px}
+  .li .meta .src{color:var(--muted)}
+
+  .assets{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .asset{padding:14px 14px 12px;position:relative}
+  .asset .tk{font:600 11px "JetBrains Mono",monospace;color:var(--blue)}
+  .asset small{display:block;font-size:11px;color:var(--muted);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .asset .px{font:600 18px/22px "JetBrains Mono",monospace;margin-bottom:6px}
+  .asset .ch{font:500 11px "JetBrains Mono",monospace;display:flex;align-items:center;gap:3px}
+  .asset .ch svg.lucide{width:12px;height:12px}
+  .asset i.st{position:absolute;top:14px;right:14px;width:6px;height:6px;border-radius:50%}
+
+  .locked{position:relative;padding:16px 16px 20px}
+  .blurred{filter:blur(3.5px);opacity:.4;pointer-events:none;user-select:none}
+  .movers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .movers h6{display:flex;align-items:center;gap:8px;font:600 13px Inter;margin-bottom:8px}
+  .movers h6 i{width:7px;height:7px;border-radius:50%}
+  .mv{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:10px;font-size:11.5px;padding:8px 0;border-top:1px solid var(--line);align-items:center}
+  .mv .t{font:600 11.5px "JetBrains Mono",monospace;color:var(--blue)}
+  .mv .n{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mv .p{font-family:"JetBrains Mono",monospace}
+  .indices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:20px}
+  .indices .asset{background:var(--card-2)}
+  .lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:0 20px;
+    background:radial-gradient(ellipse 45% 55% at 50% 50%,rgba(10,13,19,.85),rgba(10,13,19,0))}
+  .lock .ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(59,130,246,.14);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(59,130,246,.35)}
+  .lock b{font-size:15px}
+  .lock p{font-size:12.5px;line-height:18px;color:var(--muted);max-width:300px}
+  .btn-blue2{height:34px;padding:0 16px;border:0;border-radius:7px;background:var(--blue);color:#fff;font:500 13px Inter;cursor:pointer;margin-top:4px}
+
+  .beta-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:18px 20px;border-left:3px solid var(--blue)}
+  .beta-cta small{display:block;font:700 11px Inter;letter-spacing:.08em;color:var(--blue);margin-bottom:4px}
+  .beta-cta p{font-size:14px;color:#c7cdd8}
+  .beta-cta .btn-blue2{height:38px;padding:0 22px;margin:0}
+
+  footer{margin-top:40px;border-top:1px solid var(--line);padding:28px 16px 40px;text-align:center;font-size:12px;color:var(--muted)}
+  .social{display:flex;justify-content:center;gap:18px;margin-bottom:18px;color:#c7cdd8}
+  .social svg{width:18px;height:18px}
+  .links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin:12px 0}
+  .links a{color:var(--muted);text-decoration:none}
+  .links a:hover{color:var(--text)}
+
   .burger{display:none;place-items:center;width:32px;height:32px;border:0;background:none;color:#c7cdd8;flex:none;cursor:pointer}
   .burger svg.lucide{width:20px;height:20px}
   .chat-m,.scrim{display:none}
@@ -179,7 +247,15 @@
     .stack{left:10px;right:10px;top:auto;bottom:40px;width:auto}
     .notif{width:100%}
     .dash-head{margin:14px 0 12px}
-    .sec-head,.row{display:none}
+    .row{overflow-x:auto;scrollbar-width:none;margin:0 -12px;padding:0 12px}
+    .row::-webkit-scrollbar{display:none}
+    .news,.news-pair,.movers{grid-template-columns:1fr}
+    .feat img{height:170px}
+    .assets,.indices{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .beta-cta{flex-direction:column;align-items:flex-start}
+    .beta-cta .btn-blue2{width:100%}
+    footer{padding-bottom:84px}
+    .movers > div:nth-child(n+2),.indices .asset:nth-child(n+3){display:none}
     .chat-m{display:grid;position:fixed;left:16px;bottom:14px;top:auto;z-index:50}
   }
 </style>
@@ -253,7 +329,82 @@
         <a href="#">View all <i data-lucide="arrow-right"></i></a>
       </div>
       <div class="row" id="ins"></div>
+
+      <section class="sec">
+        <div class="sec-head">
+          <h3><i data-lucide="newspaper"></i>News</h3>
+          <a href="#">Full News Feed <i data-lucide="arrow-right"></i></a>
+        </div>
+        <div class="news">
+          <div class="news-main">
+            <article class="card feat">
+              <img src="assets/news-main.png" alt="">
+              <div class="bd">
+                <div class="meta"><span class="src">newsfilecorp.com</span><span><i data-lucide="clock"></i>about 1 hour ago</span></div>
+                <h4>ROSEN, RECOGNIZED INVESTOR COUNSEL, Encourages Gildan Activewear Inc. Investors to Inquire About Securities Class Action Investigation - GIL</h4>
+                <p>New York, New York--(Newsfile Corp. - October 9, 2026) - WHY: Rosen Law Firm, a global investor rights law firm, continues to investigate potential securities claims on behalf of shareholders of Gildan Activewear Inc. (NYSE: GIL) resulting from allegations that Gildan may have issued materially misleading business information to the investing public.</p>
+              </div>
+            </article>
+            <div class="news-pair">
+              <article class="card ncard">
+                <img src="assets/news-2.png" alt="">
+                <div class="bd">
+                  <div class="meta"><span class="src">newsfilecorp.com</span><span>about 1 hour ago</span></div>
+                  <h5>ROSEN, TRUSTED INVESTOR COUNSEL, Encourages Barclays PLC Investors to Inquire About Securities Class Action Investigation</h5>
+                </div>
+              </article>
+              <article class="card ncard">
+                <img src="assets/news-3.png" alt="">
+                <div class="bd">
+                  <div class="meta"><span class="src">newsfilecorp.com</span><span>about 1 hour ago</span></div>
+                  <h5>GMEX Robotics to Present at the 20th Annual LD Micro Main Event</h5>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div class="card latest">
+            <div class="hd">LATEST <a href="#">See all <i data-lucide="arrow-right"></i></a></div>
+            <div id="latest"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-head"><h3><i data-lucide="trending-up"></i>Sectors &amp; Assets</h3></div>
+        <div class="assets" id="assets"></div>
+      </section>
+
+      <section class="sec card locked">
+        <div class="blurred">
+          <div class="sec-head"><h3><i data-lucide="activity"></i>Today's movers</h3></div>
+          <div class="movers" id="movers"></div>
+          <div class="sec-head" style="margin-top:22px"><h3><i data-lucide="bar-chart-3"></i>Major indices</h3></div>
+          <div class="indices" id="indices"></div>
+        </div>
+        <div class="lock">
+          <span class="ic"><i data-lucide="lock"></i></span>
+          <b>Members only</b>
+          <p>Create a free account to unlock Today's movers, major indices and real-time alerts.</p>
+          <button class="btn-blue2">Create free account</button>
+        </div>
+      </section>
+
+      <div class="card beta-cta">
+        <div><small>BETA</small><p>Get started for full access.</p></div>
+        <button class="btn-blue2">Get Started</button>
+      </div>
     </div>
+
+    <footer>
+      <div class="social">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-label="X"><path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.9 3h6.4l4.4 5.9L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg>
+        <i data-lucide="message-circle"></i>
+        <i data-lucide="send"></i>
+      </div>
+      <p>All content is educational only. Not financial advice. Trading involves risk.</p>
+      <div class="links"><a href="#">Disclaimer</a><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">SMS Terms</a></div>
+      <p>Copyright © 2026–2026 Media Growth Holdings LLC. All rights reserved.</p>
+    </footer>
   </main>
 </div>
 
@@ -291,6 +442,46 @@
   document.getElementById('ins').innerHTML = ins.map(([a,n,tk,tx,c]) =>
     `<div class="ins"><div class="av" style="background:${c}">${a}</div><div><b>${n}</b><small><span class="tk">${tk}</span>${tx} tx</small></div></div>`
   ).join('');
+
+  const clock = '<i data-lucide="clock"></i>';
+  const latest = [
+    ['n1','Two massive trades just happened in Micron and Nvidia. What they could mean for chips','cnbc.com'],
+    ['n2','ROSEN, A LEADING LAW FIRM, Encourages Elauwit Connection, Inc. Investors to Inquire About Securities Class Action','newsfilecorp.com'],
+    ['n3','Coherent stock forms bullish pattern as Lumentum projects strong optics demand','invezz.com'],
+    ['n4','Lumentum: At The Point Of A Potential Upside Breakout','seekingalpha.com'],
+    ['n5','Forget Chasing the Biggest Yield. These 5 Dividend Stocks Have Something Better','247wallst.com'],
+    ['n6','Natural Gas, WTI Oil, Brent Oil Forecasts – Oil Gains Ground As Traders Stay Bullish','fxempire.com'],
+    ['n7','Kaplan Fox Urges Investors of Beta Bionics, Inc. (BBNX) to Seek a Leadership Role Before November','newsfilecorp.com'],
+  ];
+  document.getElementById('latest').innerHTML = latest.map(([img,t,src]) =>
+    `<div class="li"><img src="assets/${img}.png" alt=""><div><b>${t}</b><div class="meta"><span class="src">${src}</span><span>${clock}about 1 hour ago</span></div></div></div>`
+  ).join('');
+
+  const assetCard = ([tk,name,px,ch]) => {
+    const pos = ch[0] === '+';
+    return `<div class="card asset"><i class="st" style="background:${pos?'var(--up)':'var(--down)'}"></i><div class="tk">${tk}</div><small>${name}</small>
+      <div class="px">$${px}</div><div class="ch ${pos?'up':'down'}">${pos?up:dn}${ch}</div></div>`;
+  };
+  document.getElementById('assets').innerHTML = [
+    ['XLK','Technology','198.86','+0.55%'],['XLF','Financials','54.81','+1.07%'],['XLE','Energy','65.19','-0.07%'],
+    ['XLV','Healthcare','170.81','+1.58%'],['GLD','Gold','385.04','+1.70%'],['SLV','Silver','55.03','+2.97%'],
+    ['USO','Oil','147.56','-0.02%'],['TLT','20Y Treasury','77.92','+0.06%'],['SMH','Semiconductors','603.00','-0.70%'],
+    ['IBIT','Bitcoin','46.70','+0.94%'],['XLRE','Real Estate','41.65','+1.96%'],
+  ].map(assetCard).join('');
+
+  const movers = [
+    ['Top Gainers','var(--up)',[['WFF','WF Holding Limited','12.76','+522.44%'],['ZYBT','Zhengye Biotechnology Holding Limited','2.10','+82.62%'],['VEEA','Veea Inc.','5.91','+52.71%'],['JZ','Jianzhi Education Technology Group','1.19','+42.75%'],['PDSB','PDS Biotechnology Corporation','1.38','+35.15%']]],
+    ['Top Losers','var(--down)',[['SXTC','China SXT Pharmaceuticals, Inc.','0.13','-61.63%'],['DKI','DarkIris Inc. Class A Ordinary Shares','0.34','-54.87%'],['MLEC','Moolec Science S.A.','2.08','-50.33%'],['AMPGZ','Amplitech Group, Inc. Series B Right','0.11','-42.07%'],['ALISU','Calisa Acquisition Corp Units','26.26','-34.35%']]],
+    ['Most Active','var(--blue)',[['OFAL','OFA Group','0.52','+26.06%'],['ZBAO','Zhibao Technology Inc. Class A Ordinary','0.05','-18.94%'],['WFF','WF Holding Limited','12.76','+522.44%'],['T','AT&T Inc.','22.09','-10.18%'],['OLB','The OLB Group, Inc.','0.46','-16.61%']]],
+  ];
+  document.getElementById('movers').innerHTML = movers.map(([title,c,rows]) =>
+    `<div><h6><i style="background:${c}"></i>${title}</h6>${rows.map(([t,n,p,ch]) =>
+      `<div class="mv"><span class="t">${t}</span><span class="n">${n}</span><span class="p">$${p}</span><span class="p ${ch[0]==='+'?'up':'down'}">${ch}</span></div>`).join('')}</div>`
+  ).join('');
+  document.getElementById('indices').innerHTML = [
+    ['SPY','S&P 500','778.92','+0.64%'],['QQQ','NASDAQ-100','751.19','+0.48%'],['DIA','Dow Jones','516.90','+1.03%'],
+    ['IWM','Russell 2000','279.39','+0.66%'],['VIXY','Volatility','16.32','-1.12%'],
+  ].map(assetCard).join('');
 
   lucide.createIcons();
 
