@@ -96,7 +96,7 @@
   .node.on .lb{color:#f4f6fa}
 
   /* notifications: iOS-style grouped stack */
-  .stack{position:absolute;z-index:4;top:18px;right:18px;width:304px;height:110px;pointer-events:none}
+  .stack{position:absolute;z-index:4;top:18px;right:18px;width:336px;height:110px;pointer-events:none}
   .notif{position:absolute;top:0;left:0;right:0;display:flex;gap:12px;align-items:center;padding:12px 14px 12px 12px;border-radius:20px;
     background:linear-gradient(180deg,rgba(52,58,78,.62),rgba(34,39,56,.62));
     -webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);
@@ -146,6 +146,29 @@
   .ins b{display:block;font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
   .ins small{font-size:11px;color:var(--muted)}
   .ins small .tk{color:var(--blue);font-family:"JetBrains Mono",monospace;margin-right:4px}
+
+  /* notification polish */
+  .notif{gap:12px;align-items:flex-start;padding:12px 14px 13px 12px;border-radius:22px;overflow:hidden;border:1px solid transparent;
+    background:linear-gradient(180deg,rgba(60,66,90,.6),rgba(28,33,50,.7)) padding-box,
+      linear-gradient(160deg,rgba(255,255,255,.3),rgba(255,255,255,.05) 38%,rgba(255,255,255,.02) 70%,rgba(190,242,100,.22)) border-box;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 26px 50px -20px rgba(0,0,0,.8),0 8px 18px -10px rgba(0,0,0,.5)}
+  .notif::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.12) 50%,transparent 65%);transform:translateX(-130%)}
+  .notif.fresh::after{animation:shine 1.3s .3s cubic-bezier(.3,.6,.3,1) forwards}
+  @keyframes shine{to{transform:translateX(130%)}}
+  .notif .app{width:40px;height:40px;border-radius:11px;background:linear-gradient(160deg,#2f5fd8 0%,#173275 46%,#0a1430 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 .5px rgba(255,255,255,.14),0 6px 12px -4px rgba(0,0,0,.5)}
+  .notif .app svg{width:26px;height:26px}
+  .notif .hd{align-items:center;gap:6px;margin-bottom:3px}
+  .notif .tt{flex:none;font-size:13px;font-weight:600;color:#f5f5f7}
+  .notif .cat{flex:1;min-width:0;font-size:12px;color:rgba(235,235,245,.48);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notif .cat::before{content:"·";margin-right:6px}
+  .notif .tm{display:flex;align-items:center;gap:6px;font-size:11.5px;font-variant-numeric:tabular-nums;color:rgba(235,235,245,.45)}
+  .notif .tm em{font-style:normal}
+  .notif .tm i{width:6px;height:6px;border-radius:50%;background:#bef264;box-shadow:0 0 8px rgba(190,242,100,.8);transition:opacity .5s}
+  .notif.seen .tm i{opacity:0}
+  .notif .msg{font-size:13px;line-height:18px;color:rgba(235,235,245,.84);letter-spacing:-.05px;-webkit-line-clamp:4}
+  .notif .msg a{color:#9cc3ff;font-weight:500;text-decoration-color:rgba(156,195,255,.45)}
 
   /* ---------- sections below the fold ---------- */
   .sec{margin-top:26px}
@@ -527,7 +550,7 @@
     });
     lucide.createIcons();
 
-    const APP_ICON = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6ea8ff" stroke-opacity=".45"/><circle cx="12" cy="12" r="5" stroke="#6ea8ff" stroke-opacity=".7"/><path d="M12 12 18.4 5.6" stroke="#9cc3ff" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="14.5" r="1.6" fill="#bef264"/></svg>`;
+    const APP_ICON = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-opacity=".28"/><circle cx="12" cy="12" r="5.5" stroke="#fff" stroke-opacity=".5"/><path d="M12 12 18.4 5.6" stroke="#bef264" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="#bef264"/><circle cx="15.6" cy="15" r="1.3" fill="#fff" fill-opacity=".85"/></svg>`;
 
     let mobile = false, W, H, cx, cy, R, dots = [], scanned = 4812;
     let angle = -Math.PI / 2, last = performance.now();
@@ -584,14 +607,18 @@
       });
       cards.splice(mobile ? 4 : 3).forEach(c => setTimeout(() => c.el.remove(), mobile ? 600 : 1500));
     }
+    const ago = t => { const s = Math.floor((performance.now() - t) / 1000); return s < 5 ? 'now' : s < 60 ? s + 's ago' : Math.floor(s / 60) + 'm ago'; };
+    setInterval(() => cards.forEach(c => { c.tm.textContent = ago(c.t); }), 1000);
+
     function notify(st, [msg, cta]){
       const el = document.createElement('div');
-      el.className = 'notif';
+      el.className = 'notif fresh';
       el.innerHTML = `<div class="app">${APP_ICON}</div><div class="bd">
-        <div class="hd"><span class="tt">StoxRadar</span><span class="tm">now</span></div>
+        <div class="hd"><span class="tt">StoxRadar</span><span class="cat">${st.label}</span><span class="tm"><i></i><em>now</em></span></div>
         <p class="msg">${msg} <a>${cta}</a></p></div>`;
       stack.appendChild(el);
-      cards.unshift({ el });
+      cards.forEach(c => c.el.classList.add('seen'));
+      cards.unshift({ el, t: performance.now(), tm: el.querySelector('.tm em') });
       requestAnimationFrame(() => requestAnimationFrame(layout));
     }
 
@@ -639,6 +666,7 @@
       }
 
       ctx.clearRect(0, 0, W, H);
+      if (!(R > 8)) { requestAnimationFrame(frame); return; }   // hero not laid out yet
 
       // layered discs, outermost first
       [1, .78, .56, .34].forEach((k, i) => {
@@ -650,6 +678,32 @@
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
         ctx.strokeStyle = `rgba(${BLUE},${.14 + i * .04})`; ctx.lineWidth = 1;
         ctx.stroke();
+      });
+
+      // top-lit rim on each disc for depth
+      [1, .78, .56, .34].forEach(k => {
+        const r = R * k;
+        const rl = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        rl.addColorStop(0, 'rgba(255,255,255,.16)'); rl.addColorStop(.45, 'rgba(255,255,255,0)');
+        ctx.strokeStyle = rl; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, Math.max(0, r - .5), 0, TAU); ctx.stroke();
+      });
+
+      // crosshair
+      ctx.strokeStyle = `rgba(${BLUE},.08)`;
+      ctx.beginPath();
+      ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
+      ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
+      ctx.stroke();
+
+      // dashed orbits drifting in opposite directions
+      [.45, .67, .89].forEach((k, i) => {
+        ctx.save();
+        ctx.setLineDash([1.5, 7]);
+        ctx.lineDashOffset = (i % 2 ? 1 : -1) * now * .006;
+        ctx.strokeStyle = `rgba(${BLUE},.22)`;
+        ctx.beginPath(); ctx.arc(cx, cy, R * k, 0, TAU); ctx.stroke();
+        ctx.restore();
       });
 
       // bezel ticks on the outer disc
@@ -705,6 +759,12 @@
       ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2 + drift + t1 / 2 + gap, Math.PI / 2 + drift - t2 / 2 - gap); ctx.stroke();
       ctx.beginPath(); ctx.arc(cx, cy, rr, Math.PI / 2 + drift + t2 / 2 + gap, Math.PI * 1.5 + drift - t1 / 2 - gap); ctx.stroke();
 
+      // soft breathing glow behind the core
+      const br = .14 + Math.sin(now / 900) * .05;
+      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .34);
+      cg.addColorStop(0, `rgba(${LIME},${br})`); cg.addColorStop(1, `rgba(${LIME},0)`);
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, R * .34, 0, TAU); ctx.fill();
+
       // hatched core
       const cr = R * .16;
       ctx.save();
@@ -728,6 +788,20 @@
         const c = d.lime ? LIME : BLUE;
         ctx.fillStyle = `rgba(${c},${.35 + d.glow * .6})`;
         ctx.beginPath(); ctx.arc(x, y, d.lime ? 3.2 : 2.2, 0, TAU); ctx.fill();
+      }
+
+      // signal path core → active station
+      for (const s of STATIONS) {
+        if (s.on <= 0) continue;
+        const a = s.deg * DEG, r0 = R * .16 + 8, r1 = R * s.ring - 20;
+        ctx.save();
+        ctx.setLineDash([3, 5]); ctx.lineDashOffset = -now * .04;
+        ctx.strokeStyle = `rgba(${LIME},${s.on * .7})`; ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+        ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+        ctx.stroke();
+        ctx.restore();
       }
 
       // pulse ring behind an active station
